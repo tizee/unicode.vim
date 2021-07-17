@@ -6,3 +6,5 @@ Provide commands to convert Unicode value string to corresponding character.
 :<range>Unicode
 :Unicode <value>
 ```
+
+![usage](./unicode.gif)
