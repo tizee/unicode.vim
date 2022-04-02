@@ -14,6 +14,7 @@ function! s:IsValidUnicodeValue(code) abort
      let value = str2nr(code_str,16)
    else
      let value = -1
+   endif
  endif
  " \u0000-\u10ffff
  return [value >= g:min_unicode && value <= g:max_unicode, code_str]
