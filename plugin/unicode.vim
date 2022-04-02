@@ -8,6 +8,7 @@ let g:max_unicode=get(g:,'max_unicode',0x10ffff)
 function! s:IsValidUnicodeValue(code) abort
  let result = matchlist(a:code,'\v(0x){0,1}(\x{1,6})')
  let result = filter(result,{ _,val -> len(val) >= 0 && len(matchstr(val,'0x')) == 0})
+ let value=-1
  if len(result) > 0
    let code_str = result[0]
    if len(code_str) > 0
