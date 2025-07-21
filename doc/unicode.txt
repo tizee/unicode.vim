@@ -1,0 +1,260 @@
+*unicode.txt*	For Vim version 7.0 and above
+
+UNICODE VIM PLUGIN					*unicode* *unicode-plugin*
+
+Author: tizee <https://github.com/tizee>
+Version: 1.0.0
+Homepage: https://github.com/tizee/unicode.vim
+License: MIT License
+
+==============================================================================
+CONTENTS						*unicode-contents*
+
+    1. Introduction ............................ |unicode-introduction|
+    2. Installation ............................ |unicode-installation|
+    3. Commands ................................ |unicode-commands|
+    4. Functions ............................... |unicode-functions|
+    5. Configuration ........................... |unicode-configuration|
+    6. Examples ................................ |unicode-examples|
+
+==============================================================================
+1. INTRODUCTION						*unicode-introduction*
+
+The Unicode plugin provides functionality to convert between Unicode
+characters and their various string representations. It supports multiple
+Unicode format styles and can convert both directions:
+
+- From Unicode strings to actual characters (emoji, symbols, etc.)
+- From Unicode characters to their hexadecimal representations
+
+Supported Unicode formats:
+- JavaScript/JSON style: \u1F600
+- 8-digit Unicode: \U0001F600
+- Unicode notation: U+1F600
+- HTML entity: &#x1F600;
+- Perl style: \x{1F600}
+- Hexadecimal: 0x1F600
+- Plain hex: 1F600
+
+==============================================================================
+2. INSTALLATION						*unicode-installation*
+
+Method 1: Manual Installation ~
+Copy the plugin files to your Vim configuration directory:
+>
+    ~/.vim/plugin/unicode.vim
+    ~/.vim/autoload/unicode.vim
+    ~/.vim/doc/unicode.txt
+<
+
+Method 2: Plugin Manager ~
+If using a plugin manager like vim-plug, add to your .vimrc:
+>
+    Plug 'tizee/unicode.vim'
+<
+
+After installation, run |:helptags| to generate help tags:
+>
+    :helptags ~/.vim/doc
+<
+
+==============================================================================
+3. COMMANDS						*unicode-commands*
+
+							*:Unicode*
+:Unicode [string]
+		Convert Unicode string representation to actual Unicode
+		character. If no argument is provided, operates on current
+		visual selection.
+
+		Examples:
+		- :Unicode \u1F600    → 😀
+		- :Unicode U+1F44D    → 👍
+		- :Unicode &#x2764;   → ❤
+
+:[range]Unicode [string]				*:Unicode-range*
+		Convert Unicode string on specified line range. Currently
+		only supports single line conversions.
+
+							*:GetUnicode*
+:GetUnicode [string]
+		Convert Unicode character(s) to hexadecimal representation.
+		If no argument is provided, operates on current visual
+		selection.
+
+		Examples:
+		- :GetUnicode 😀      → 0x1F600
+		- :GetUnicode ABC     → 0x41 0x42 0x43
+
+:[range]GetUnicode [string]				*:GetUnicode-range*
+		Convert Unicode characters on specified line range to their
+		hexadecimal representation.
+
+==============================================================================
+4. FUNCTIONS						*unicode-functions*
+
+The plugin provides several autoload functions that can be used by other
+plugins or in custom scripts:
+
+unicode#parse_formats({text})				*unicode#parse_formats()*
+		Parse various Unicode string formats and extract hexadecimal
+		code.
+
+		Parameters:~
+		    {text}  String containing Unicode representation
+
+		Returns:~
+		    [is_valid, hex_code]
+		    - is_valid: 1 if valid format found, 0 otherwise
+		    - hex_code: Hexadecimal string without prefixes
+
+unicode#hex_to_char({hex_code})				*unicode#hex_to_char()*
+		Convert hexadecimal code to Unicode character.
+
+		Parameters:~
+		    {hex_code}  Hexadecimal string (without 0x prefix)
+
+		Returns:~
+		    Unicode character string, or empty string if invalid
+
+unicode#char_to_hex({char})				*unicode#char_to_hex()*
+		Convert Unicode character(s) to hexadecimal codes.
+
+		Parameters:~
+		    {char}  Unicode character(s)
+
+		Returns:~
+		    List of hexadecimal strings (uppercase, without 0x prefix)
+
+unicode#is_valid_value({code})				*unicode#is_valid_value()*
+		Validate Unicode hexadecimal value.
+
+		Parameters:~
+		    {code}  Hexadecimal string with optional 0x prefix
+
+		Returns:~
+		    [is_valid, clean_hex_code]
+		    - is_valid: 1 if valid and within Unicode range, 0 otherwise
+		    - clean_hex_code: Hex string without 0x prefix
+
+unicode#get_substring({val}, {start}, {len})		*unicode#get_substring()*
+		Get character substring handling multi-byte characters properly.
+
+		Parameters:~
+		    {val}    String value
+		    {start}  Starting character position (0-based)
+		    {len}    Length in characters
+
+		Returns:~
+		    Substring
+
+unicode#get_range()					*unicode#get_range()*
+		Get current Unicode range settings.
+
+		Returns:~
+		    [min_unicode, max_unicode]
+
+==============================================================================
+5. CONFIGURATION					*unicode-configuration*
+
+The plugin can be configured using the following global variables:
+
+							*g:debug_unicode_vim*
+g:debug_unicode_vim
+		Enable debug output. Set to 1 to see debug messages.
+		Default: 0
+>
+		let g:debug_unicode_vim = 1
+<
+
+							*g:min_unicode*
+g:min_unicode
+		Minimum valid Unicode value (decimal).
+		Default: 0 (U+0000)
+>
+		let g:min_unicode = 0x20  " Start from printable characters
+<
+
+							*g:max_unicode*
+g:max_unicode
+		Maximum valid Unicode value (decimal).
+		Default: 0x10FFFF (maximum Unicode codepoint)
+>
+		let g:max_unicode = 0xFFFF  " Limit to Basic Multilingual Plane
+<
+
+							*g:loaded_unicode_vim*
+g:loaded_unicode_vim
+		Set to 1 to prevent loading the plugin.
+>
+		let g:loaded_unicode_vim = 1
+<
+
+							*g:unicode_vim_version*
+g:unicode_vim_version
+		Plugin version string (read-only). Set automatically when 
+		plugin loads.
+>
+		echo g:unicode_vim_version  " 1.0.0
+<
+
+==============================================================================
+6. EXAMPLES						*unicode-examples*
+
+Basic Usage ~
+
+Convert Unicode strings to characters:
+>
+	" Place cursor on \u1F600 and run:
+	:Unicode
+	" Result: 😀
+
+	" Or specify directly:
+	:Unicode U+1F44D
+	" Result: 👍
+<
+
+Convert characters to Unicode:
+>
+	" Place cursor on 😀 and run:
+	:GetUnicode
+	" Result: 0x1F600
+
+	" Multiple characters:
+	:GetUnicode Hello
+	" Result: 0x48 0x65 0x6C 0x6C 0x6F
+<
+
+Visual Selection ~
+
+You can also work with visual selections:
+>
+	" Select text containing \u1F600\u1F44D
+	" Then run:
+	:Unicode
+	" Result: 😀👍
+<
+
+Using Functions in Scripts ~
+>
+	" Check if string contains valid Unicode format
+	let [valid, hex] = unicode#parse_formats('\u1F600')
+	if valid
+	    echo "Found Unicode: " . hex
+	    let char = unicode#hex_to_char(hex)
+	    echo "Character: " . char
+	endif
+
+	" Convert text to hex codes
+	let hex_list = unicode#char_to_hex('Hello')
+	echo "Hex codes: " . join(hex_list, ', ')
+<
+
+Batch Processing ~
+>
+	" Process multiple Unicode strings in a buffer
+	:%s/\\u\(\x\{4\}\)/\=unicode#hex_to_char(submatch(1))/g
+<
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:noet:fen:fdl=0:
