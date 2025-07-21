@@ -154,6 +154,8 @@ unicode.vim/
 │   └── README.md
 ├── run_tests.sh           # Command-line test runner
 ├── update_doc.sh          # Documentation helper
+├── release.sh             # Automated release script
+├── version.sh             # Version information script
 └── README.md
 ```
 
@@ -198,6 +200,27 @@ vim -u NONE -c "helptags doc/" -c "quit"
 4. **Regenerate tags** with `./update_doc.sh`
 5. **Test manually** in Vim: `:help unicode`
 
+### Release Workflow
+
+For creating new releases:
+
+```bash
+# Check current version and status
+./version.sh
+
+# Create git tag with current commit message
+./release.sh
+
+# Preview what the release script would do (dry run)
+./release.sh --dry-run
+```
+
+The release script will:
+- Extract version from plugin file (`g:unicode_vim_version`)
+- Use current git commit message as release notes
+- Create annotated git tag (e.g., `v1.0.0`)
+- Optionally push tag to remote repository
+
 ### Architecture
 
 - **Plugin file** (`plugin/unicode.vim`): Defines user commands, handles UI interactions
@@ -223,8 +246,30 @@ vim -u NONE -c "helptags doc/" -c "quit"
 # Test documentation  
 ./update_doc.sh
 
+# Check version and git status
+./version.sh
+
 # Manual testing in clean environment
 vim -u NONE -c 'set runtimepath+=.' -c 'help unicode'
+```
+
+### Release Management
+
+```bash
+# Check current status before release
+./version.sh
+
+# Preview release without making changes
+./release.sh --dry-run
+
+# Create new release with current commit message
+./release.sh
+
+# The release script will:
+# 1. Read version from plugin file
+# 2. Check for uncommitted changes
+# 3. Create annotated git tag using commit message
+# 4. Optionally push to remote
 ```
 
 ## Examples
